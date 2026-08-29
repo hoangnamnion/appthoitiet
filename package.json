@@ -1,9 +1,10 @@
-﻿{
+{
   "name": "thoi-tiet-hoang-tien",
   "version": "1.0.0",
   "description": "App thoi tiet Hoang Tien, Thanh Hoa",
   "main": "index.html",
   "scripts": {
+    "build": "node -e \"const fs=require('fs'); fs.mkdirSync('www',{recursive:true}); ['index.html','style.css','app.js'].forEach(f=>{if(fs.existsSync(f))fs.copyFileSync(f,'www/'+f)});\"",
     "sync:android": "npx cap sync android",
     "sync:ios": "npx cap sync ios",
     "open:android": "npx cap open android",
