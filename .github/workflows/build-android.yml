@@ -39,21 +39,6 @@ jobs:
       - name: 🔨 Bundle Web Assets to www/
         run: npm run build
 
-      - name: ⚙️ Ensure Capacitor Config webDir is www
-        run: |
-          node -e '
-            const fs = require("fs");
-            let cfg = {};
-            if (fs.existsSync("capacitor.config.json")) {
-              cfg = JSON.parse(fs.readFileSync("capacitor.config.json", "utf8"));
-            }
-            cfg.appId = cfg.appId || "com.thoitiet.hoangtienvn";
-            cfg.appName = cfg.appName || "Thoi Tiet";
-            cfg.webDir = "www";
-            fs.writeFileSync("capacitor.config.json", JSON.stringify(cfg, null, 2));
-            console.log("Verified capacitor.config.json with webDir=www");
-          '
-
       - name: 📱 Add & Sync Capacitor Android
         run: |
           if [ ! -d "android" ]; then
@@ -97,21 +82,6 @@ jobs:
 
       - name: 🔨 Bundle Web Assets to www/
         run: npm run build
-
-      - name: ⚙️ Ensure Capacitor Config webDir is www
-        run: |
-          node -e '
-            const fs = require("fs");
-            let cfg = {};
-            if (fs.existsSync("capacitor.config.json")) {
-              cfg = JSON.parse(fs.readFileSync("capacitor.config.json", "utf8"));
-            }
-            cfg.appId = cfg.appId || "com.thoitiet.hoangtienvn";
-            cfg.appName = cfg.appName || "Thoi Tiet";
-            cfg.webDir = "www";
-            fs.writeFileSync("capacitor.config.json", JSON.stringify(cfg, null, 2));
-            console.log("Verified capacitor.config.json with webDir=www");
-          '
 
       - name: 📱 Add & Sync Capacitor iOS
         run: |
