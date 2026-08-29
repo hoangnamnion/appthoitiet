@@ -1,4 +1,4 @@
-name: Build iOS IPA
+﻿name: Build Android APK
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ios:
-    runs-on: macos-latest
-
+  build-android:
+    runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,42 +22,56 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install CocoaPods
-        run: gem install cocoapods
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Add iOS platform
-        run: npx cap add ios || echo "iOS already added"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Capacitor CLI
+        run: npm install -g @capacitor/cli
+
+      - name: Add Android platform
+        run: npx cap add android || echo "Android already added"
 
       - name: Sync Capacitor
-        run: npx cap sync ios
+        run: npx cap sync android
 
-      - name: Install Pods
-        run: |
-          cd ios/App
-          pod install
+      - name: Make Gradlew executable
+        run: chmod +x android/gradlew
 
-      - name: Build iOS (unsigned - for testing)
+      - name: Build Debug APK
         run: |
-          xcodebuild \
-            -workspace ios/App/App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -sdk iphonesimulator \
-            -derivedDataPath ios/build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+          cd android
+          ./gradlew assembleDebug --no-daemon
 
-      - name: Package IPA (simulator build)
-        run: |
-          mkdir -p ios/ipa
-          cd ios/build/Build/Products/Release-iphonesimulator
-          zip -r ../../../../../ios/ipa/ThoiTiet-simulator.zip App.app
-          
-      - name: Upload IPA artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ThoiTiet-iOS-simulator
-          path: ios/ipa/
+          name: weather-app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: "Thời Tiết App v${{ github.run_number }}"
+          body: |
+            ## 📱 App Thời Tiết - Hoằng Tiến, Thanh Hóa
+            
+            ### Cài đặt Android:
+            1. Tải file `weather-app-debug.apk` bên dưới
+            2. Trên Android: Cài đặt → Bảo mật → Bật "Cho phép cài từ nguồn không rõ"
+            3. Mở file APK để cài
+            
+            Built from commit: ${{ github.sha }}
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
