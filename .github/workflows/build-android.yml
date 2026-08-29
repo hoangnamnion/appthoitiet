@@ -1,0 +1,63 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Add iOS platform
+        run: npx cap add ios || echo "iOS already added"
+
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      - name: Install Pods
+        run: |
+          cd ios/App
+          pod install
+
+      - name: Build iOS (unsigned - for testing)
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath ios/build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package IPA (simulator build)
+        run: |
+          mkdir -p ios/ipa
+          cd ios/build/Build/Products/Release-iphonesimulator
+          zip -r ../../../../../ios/ipa/ThoiTiet-simulator.zip App.app
+          
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThoiTiet-iOS-simulator
+          path: ios/ipa/
+          retention-days: 30
