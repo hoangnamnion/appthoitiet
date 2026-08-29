@@ -37,6 +37,11 @@ jobs:
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
+      - name: Prepare www folder
+        run: |
+          mkdir -p www
+          cp index.html style.css app.js www/
+
       - name: Sync Capacitor
         run: npx cap sync android
 
@@ -100,6 +105,11 @@ jobs:
 
       - name: Add iOS platform
         run: npx cap add ios || echo "iOS already added"
+
+      - name: Prepare www folder
+        run: |
+          mkdir -p www
+          cp index.html style.css app.js www/
 
       - name: Sync Capacitor
         run: npx cap sync ios
