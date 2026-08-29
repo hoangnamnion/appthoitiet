@@ -1,7 +1,8 @@
 ﻿{
-  "appId": "com.thoitiet.hoangtienvn",
-  "appName": "Thoi Tiet",
+  "appId": "com.thoitiet.hoangtien",
+  "appName": "Thời Tiết",
   "webDir": "www",
+  "backgroundColor": "#070d1e",
   "server": {
     "androidScheme": "https",
     "cleartext": false
@@ -16,7 +17,15 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0
+      "launchShowDuration": 1500,
+      "backgroundColor": "#070d1e",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#070d1e"
     }
   }
 }

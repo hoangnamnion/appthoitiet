@@ -1,343 +1,347 @@
-// ===== CONFIG =====
+﻿// ===== CONFIGURATION =====
 const LAT = 19.852;
 const LON = 105.952;
 const TIMEZONE = "Asia/Ho_Chi_Minh";
 
-// ===== WEATHER CODE MAP =====
+// ===== WEATHER CODE TO DETAILS MAP =====
 const WMO = {
-  0:  { desc: "Trời quang đãng",       emoji: "☀️",  glow: "#FFD700" },
-  1:  { desc: "Chủ yếu quang đãng",    emoji: "🌤️", glow: "#FFD700" },
-  2:  { desc: "Có mây rải rác",         emoji: "⛅",  glow: "#87CEEB" },
-  3:  { desc: "Trời nhiều mây",         emoji: "☁️",  glow: "#A9A9A9" },
-  45: { desc: "Sương mù",               emoji: "🌫️", glow: "#C0C0C0" },
-  48: { desc: "Sương giá",              emoji: "🌫️", glow: "#C0C0C0" },
-  51: { desc: "Mưa phùn nhẹ",           emoji: "🌦️", glow: "#4682B4" },
-  53: { desc: "Mưa phùn vừa",           emoji: "🌦️", glow: "#4682B4" },
-  55: { desc: "Mưa phùn dày",           emoji: "🌧️", glow: "#4169E1" },
-  61: { desc: "Mưa nhẹ",                emoji: "🌧️", glow: "#4682B4" },
-  63: { desc: "Mưa vừa",                emoji: "🌧️", glow: "#4169E1" },
-  65: { desc: "Mưa to",                 emoji: "🌧️", glow: "#1E40AF" },
-  80: { desc: "Mưa rào nhẹ",            emoji: "🌦️", glow: "#4682B4" },
-  81: { desc: "Mưa rào vừa",            emoji: "⛈️",  glow: "#6B21A8" },
-  82: { desc: "Mưa rào nặng",           emoji: "⛈️",  glow: "#6B21A8" },
-  95: { desc: "Dông bão",               emoji: "⛈️",  glow: "#7C3AED" },
-  96: { desc: "Dông bão có mưa đá",     emoji: "🌩️", glow: "#7C3AED" },
-  99: { desc: "Dông bão mưa đá mạnh",   emoji: "🌩️", glow: "#7C3AED" },
+  0:  { desc: "Trời quang đãng",       emoji: "☀️",  glow: "rgba(251, 191, 36, 0.55)" },
+  1:  { desc: "Chủ yếu quang đãng",    emoji: "🌤️", glow: "rgba(251, 191, 36, 0.5)" },
+  2:  { desc: "Có mây rải rác",         emoji: "⛅",  glow: "rgba(56, 189, 248, 0.5)" },
+  3:  { desc: "Trời nhiều mây",         emoji: "☁️",  glow: "rgba(148, 163, 184, 0.45)" },
+  45: { desc: "Sương mù",               emoji: "🌫️", glow: "rgba(203, 213, 225, 0.4)" },
+  48: { desc: "Sương giá",              emoji: "🌫️", glow: "rgba(203, 213, 225, 0.4)" },
+  51: { desc: "Mưa phùn nhẹ",           emoji: "🌦️", glow: "rgba(56, 189, 248, 0.5)" },
+  53: { desc: "Mưa phùn vừa",           emoji: "🌦️", glow: "rgba(56, 189, 248, 0.5)" },
+  55: { desc: "Mưa phùn dày",           emoji: "🌧️", glow: "rgba(37, 99, 235, 0.55)" },
+  61: { desc: "Mưa nhẹ",                emoji: "🌧️", glow: "rgba(56, 189, 248, 0.55)" },
+  63: { desc: "Mưa vừa",                emoji: "🌧️", glow: "rgba(37, 99, 235, 0.6)" },
+  65: { desc: "Mưa to dồn dập",         emoji: "🌧️", glow: "rgba(29, 78, 216, 0.65)" },
+  80: { desc: "Mưa rào nhẹ",            emoji: "🌦️", glow: "rgba(56, 189, 248, 0.55)" },
+  81: { desc: "Mưa rào vừa",            emoji: "⛈️",  glow: "rgba(124, 58, 237, 0.6)" },
+  82: { desc: "Mưa rào rất to",         emoji: "⛈️",  glow: "rgba(124, 58, 237, 0.7)" },
+  95: { desc: "Dông bão",               emoji: "⛈️",  glow: "rgba(124, 58, 237, 0.7)" },
+  96: { desc: "Dông bão có mưa đá",     emoji: "🌩️", glow: "rgba(124, 58, 237, 0.75)" },
+  99: { desc: "Dông bão mưa đá mạnh",   emoji: "🌩️", glow: "rgba(124, 58, 237, 0.8)" },
 };
+
 function getWMO(code) {
-  return WMO[code] || { desc: "Không xác định", emoji: "🌡️", glow: "#888" };
+  return WMO[code] || { desc: "Có mây", emoji: "⛅", glow: "rgba(56, 189, 248, 0.5)" };
 }
 
-// ===== HELPERS =====
 function getWindDir(deg) {
-  const dirs = ["B","ĐB","Đ","ĐN","N","TN","T","TB"];
+  const dirs = ["Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc"];
   return dirs[Math.round(deg / 45) % 8];
 }
-function getUVLabel(uv) {
+
+function getUVLevel(uv) {
   uv = Math.round(uv);
-  if (uv <= 2) return uv + " Thấp";
-  if (uv <= 5) return uv + " TB";
-  if (uv <= 7) return uv + " Cao";
-  return uv + " Rất cao";
+  if (uv <= 2) return `${uv} (Thấp)`;
+  if (uv <= 5) return `${uv} (Trung bình)`;
+  if (uv <= 7) return `${uv} (Cao)`;
+  if (uv <= 10) return `${uv} (Rất cao)`;
+  return `${uv} (Nguy hại)`;
 }
+
+function getHumidityDesc(h) {
+  if (h < 40) return "Không khí khô";
+  if (h <= 70) return "Độ ẩm dễ chịu";
+  return "Độ ẩm cao, có sương";
+}
+
 function getTodayVN() {
   return new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE });
 }
+
 function getCurrentHourVN() {
   return parseInt(new Date().toLocaleString("en-US", {
-    hour: "numeric", hour12: false, timeZone: TIMEZONE
+    hour: "numeric",
+    hour12: false,
+    timeZone: TIMEZONE
   }), 10);
 }
-function formatDateTime(dt) {
-  return new Intl.DateTimeFormat("vi-VN", {
-    weekday: "long", day: "2-digit", month: "2-digit",
-    year: "numeric", hour: "2-digit", minute: "2-digit",
-    timeZone: TIMEZONE
-  }).format(dt);
+
+function formatHourLabel(isoStr) {
+  const h = parseInt(isoStr.split("T")[1].split(":")[0], 10);
+  return `${h.toString().padStart(2, "0")}:00`;
 }
-function formatStatusTime(dt) {
-  return new Intl.DateTimeFormat("vi-VN", {
-    hour: "2-digit", minute: "2-digit", timeZone: TIMEZONE
-  }).format(dt);
-}
-function parseDateFromISO(s) { return s.split("T")[0]; }
-function parseHourFromISO(s) { return parseInt(s.split("T")[1].split(":")[0], 10); }
-function formatHourLabel(s)  {
-  const h = parseHourFromISO(s);
-  return h.toString().padStart(2, "0") + ":00";
-}
+
 function getDayLabel(isoDate) {
   const today = getTodayVN();
-  const d = new Date(today); d.setDate(d.getDate() + 1);
+  const d = new Date(today);
+  d.setDate(d.getDate() + 1);
   const tomorrow = d.toISOString().slice(0, 10);
-  if (isoDate === today)    return "Hôm nay";
+
+  if (isoDate === today) return "Hôm nay";
   if (isoDate === tomorrow) return "Ngày mai";
+
   const [y, mo, day] = isoDate.split("-").map(Number);
-  const days = ["CN","T2","T3","T4","T5","T6","T7"];
-  return days[new Date(y, mo - 1, day).getDay()] + " " + day + "/" + mo;
+  const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+  const dt = new Date(y, mo - 1, day);
+  return `${days[dt.getDay()]} ${day}/${mo}`;
 }
 
-// ===== PARTICLES =====
-function initParticles() {
-  const canvas = document.getElementById("particles-canvas");
+// ===== SKY PARTICLE STARS =====
+function initSkyParticles() {
+  const canvas = document.getElementById("sky-canvas");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
-  let W, H, stars = [];
+  let W, H, particles = [];
 
   function resize() {
-    W = canvas.width  = window.innerWidth;
+    W = canvas.width = window.innerWidth;
     H = canvas.height = window.innerHeight;
   }
   resize();
   window.addEventListener("resize", resize);
 
-  for (let i = 0; i < 80; i++) {
-    stars.push({
-      x: Math.random(), y: Math.random(),
-      r: Math.random() * 1.5 + 0.3,
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 1.4 + 0.3,
       a: Math.random(),
-      speed: Math.random() * 0.003 + 0.001,
+      speed: Math.random() * 0.002 + 0.001,
       phase: Math.random() * Math.PI * 2
     });
   }
 
-  function draw(t) {
+  function render(time) {
     ctx.clearRect(0, 0, W, H);
-    stars.forEach(s => {
-      const alpha = s.a * (0.5 + 0.5 * Math.sin(t * s.speed * 1000 + s.phase));
+    particles.forEach(p => {
+      const alpha = p.a * (0.4 + 0.6 * Math.sin(time * p.speed * 1000 + p.phase));
       ctx.beginPath();
-      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255," + alpha + ")";
+      ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
       ctx.fill();
     });
-    requestAnimationFrame(draw);
+    requestAnimationFrame(render);
   }
-  requestAnimationFrame(draw);
+  requestAnimationFrame(render);
 }
 
-// ===== FETCH =====
-async function fetchWeather() {
+// ===== API FETCH =====
+async function fetchWeatherData() {
   const params = new URLSearchParams({
-    latitude: LAT, longitude: LON,
-    timezone: TIMEZONE, forecast_days: 3, wind_speed_unit: "kmh",
-    current: "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,uv_index,precipitation",
-    hourly:  "temperature_2m,weather_code,precipitation_probability",
-    daily:   "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+    latitude: LAT,
+    longitude: LON,
+    timezone: TIMEZONE,
+    forecast_days: 3,
+    wind_speed_unit: "kmh",
+    current: [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "apparent_temperature",
+      "weather_code",
+      "wind_speed_10m",
+      "wind_direction_10m",
+      "uv_index",
+      "precipitation"
+    ].join(","),
+    hourly: [
+      "temperature_2m",
+      "weather_code",
+      "precipitation_probability"
+    ].join(","),
+    daily: [
+      "weather_code",
+      "temperature_2m_max",
+      "temperature_2m_min",
+      "precipitation_probability_max"
+    ].join(",")
   });
-  const res = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
-  if (!res.ok) throw new Error("API " + res.status);
+
+  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+  if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
   return res.json();
 }
 
-// ===== RENDER CURRENT =====
-function renderCurrent(data) {
+// ===== UI RENDER FUNCTIONS =====
+function renderCurrentHero(data) {
   const c = data.current;
+  const d = data.daily;
   const w = getWMO(c.weather_code);
 
   document.getElementById("hero-emoji").textContent = w.emoji;
-  document.getElementById("hero-temp").textContent  = Math.round(c.temperature_2m) + "°";
-  document.getElementById("hero-desc").textContent  = w.desc;
-  document.getElementById("hero-feels").textContent = "Cảm giác " + Math.round(c.apparent_temperature) + "°";
+  document.getElementById("hero-temp").innerHTML = `${Math.round(c.temperature_2m)}<span class="deg-sym">°</span>`;
+  document.getElementById("hero-desc").textContent = w.desc;
+  document.getElementById("hero-feels").textContent = `Cảm giác ${Math.round(c.apparent_temperature)}°`;
 
-  document.getElementById("s-humidity").textContent = c.relative_humidity_2m + "%";
-  document.getElementById("s-wind").textContent     = Math.round(c.wind_speed_10m) + " km/h\n" + getWindDir(c.wind_direction_10m);
-  document.getElementById("s-uv").textContent       = getUVLabel(c.uv_index);
-  document.getElementById("s-precip").textContent   = c.precipitation + " mm";
+  const todayHigh = Math.round(d.temperature_2m_max[0]);
+  const todayLow = Math.round(d.temperature_2m_min[0]);
+  document.getElementById("hero-highlow").textContent = `C: ${todayHigh}°  •  T: ${todayLow}°`;
 
-  // Glow effect
-  document.getElementById("hero-glow").style.background =
-    "radial-gradient(circle, " + w.glow + "88, transparent)";
+  // Glow color
+  const glowEl = document.getElementById("visual-glow");
+  if (glowEl) {
+    glowEl.style.background = `radial-gradient(circle, ${w.glow}, transparent 70%)`;
+  }
 
-  // Nav dot color
-  document.getElementById("nav-dot").style.boxShadow =
-    "0 0 14px " + w.glow;
-  document.getElementById("nav-dot").style.background = w.glow;
+  // Metrics cards
+  document.getElementById("m-humidity").textContent = `${c.relative_humidity_2m}%`;
+  document.getElementById("m-humidity-desc").textContent = getHumidityDesc(c.relative_humidity_2m);
 
-  // Show data
-  document.getElementById("skeleton").classList.add("hidden");
-  document.getElementById("hero-data").classList.remove("hidden");
+  document.getElementById("m-wind").innerHTML = `${Math.round(c.wind_speed_10m)} <span class="unit">km/h</span>`;
+  document.getElementById("m-wind-dir").textContent = `Hướng: ${getWindDir(c.wind_direction_10m)}`;
+
+  document.getElementById("m-uv").textContent = `${Math.round(c.uv_index)}`;
+  document.getElementById("m-uv-level").textContent = getUVLevel(c.uv_index);
+
+  document.getElementById("m-precip").innerHTML = `${c.precipitation || 0} <span class="unit">mm</span>`;
+
+  // Update sync timestamp
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  document.getElementById("last-sync").textContent = `Cập nhật lúc ${timeStr}`;
 }
 
-// ===== RENDER HOURLY =====
-function renderHourly(data) {
+function renderHourlyTrack(data) {
   const track = document.getElementById("hourly-track");
   track.innerHTML = "";
 
   const times = data.hourly.time;
   const temps = data.hourly.temperature_2m;
   const codes = data.hourly.weather_code;
-  const probs = data.hourly.precipitation_probability;
+  const pops = data.hourly.precipitation_probability;
 
-  const todayVN   = getTodayVN();
-  const curHourVN = getCurrentHourVN();
+  const todayVN = getTodayVN();
+  const curHour = getCurrentHourVN();
 
-  let startIdx = times.findIndex(t =>
-    parseDateFromISO(t) === todayVN && parseHourFromISO(t) === curHourVN
-  );
+  let startIdx = times.findIndex(t => {
+    const isToday = t.startsWith(todayVN);
+    const h = parseInt(t.split("T")[1].split(":")[0], 10);
+    return isToday && h === curHour;
+  });
   if (startIdx < 0) startIdx = 0;
 
-  const end = Math.min(startIdx + 24, times.length);
-  for (let i = startIdx; i < end; i++) {
-    const w     = getWMO(codes[i]);
+  const count = Math.min(startIdx + 24, times.length);
+  for (let i = startIdx; i < count; i++) {
     const isNow = (i === startIdx);
-    const delay = (i - startIdx) * 0.03;
+    const w = getWMO(codes[i]);
+    const pop = pops[i] ?? 0;
 
-    const el = document.createElement("div");
-    el.className = "hourly-item" + (isNow ? " now" : "");
-    el.style.animationDelay = delay + "s";
-    el.innerHTML =
-      '<span class="hourly-time">' + (isNow ? "Bây giờ" : formatHourLabel(times[i])) + "</span>" +
-      '<span class="hourly-emoji">' + w.emoji + "</span>" +
-      '<span class="hourly-temp">' + Math.round(temps[i]) + "°</span>" +
-      '<span class="hourly-rain">💧' + (probs[i] ?? 0) + "%</span>";
-    track.appendChild(el);
+    const pill = document.createElement("div");
+    pill.className = `hourly-pill${isNow ? " now" : ""}`;
+    pill.innerHTML = `
+      <span class="pill-time">${isNow ? "Bây giờ" : formatHourLabel(times[i])}</span>
+      <span class="pill-emoji">${w.emoji}</span>
+      <span class="pill-temp">${Math.round(temps[i])}°</span>
+      <span class="pill-pop">💧${pop}%</span>
+    `;
+    track.appendChild(pill);
   }
 }
 
-// ===== RENDER DAILY =====
-function renderDaily(data) {
-  const list  = document.getElementById("daily-list");
-  list.innerHTML = "";
+function renderDailyTable(data) {
+  const table = document.getElementById("daily-table");
+  table.innerHTML = "";
 
   const dates = data.daily.time;
   const codes = data.daily.weather_code;
   const highs = data.daily.temperature_2m_max;
-  const lows  = data.daily.temperature_2m_min;
+  const lows = data.daily.temperature_2m_min;
 
   const todayVN = getTodayVN();
-  let todayIdx  = dates.indexOf(todayVN);
+  let todayIdx = dates.indexOf(todayVN);
   if (todayIdx < 0) todayIdx = 0;
 
   const from = todayIdx + 1;
-  const to   = Math.min(from + 2, dates.length);
+  const to = Math.min(from + 2, dates.length);
 
   const maxH = Math.max(...highs.slice(from, to));
   const minL = Math.min(...lows.slice(from, to));
   const range = (maxH - minL) || 1;
 
   for (let i = from; i < to; i++) {
-    const w      = getWMO(codes[i]);
+    const w = getWMO(codes[i]);
+    const high = Math.round(highs[i]);
+    const low = Math.round(lows[i]);
     const barPct = Math.round(((highs[i] - minL) / range) * 100);
-    const delay  = (i - from) * 0.1;
 
-    const el = document.createElement("div");
-    el.className = "daily-row";
-    el.style.animationDelay = delay + "s";
-    el.innerHTML =
-      '<span class="daily-name">' + getDayLabel(dates[i]) + "</span>" +
-      '<span class="daily-emoji">' + w.emoji + "</span>" +
-      '<div class="daily-bar-zone"><div class="daily-bar-fill" style="width:' + barPct + '%"></div></div>' +
-      '<div class="daily-temps">' +
-        '<span class="daily-high">' + Math.round(highs[i]) + "°</span>" +
-        '<span class="daily-low">'  + Math.round(lows[i])  + "°</span>" +
-      "</div>";
-    list.appendChild(el);
+    const row = document.createElement("div");
+    row.className = "daily-entry";
+    row.innerHTML = `
+      <span class="daily-col-day">${getDayLabel(dates[i])}</span>
+      <span class="daily-col-emoji">${w.emoji}</span>
+      <div class="daily-col-bar">
+        <div class="daily-bar-fill" style="width: ${barPct}%;"></div>
+      </div>
+      <div class="daily-col-temps">
+        <span class="daily-t-low">${low}°</span>
+        <span class="daily-t-high">${high}°</span>
+      </div>
+    `;
+    table.appendChild(row);
   }
 }
 
-// ===== CLOCK =====
-function updateClock() {
-  const now = new Date();
-  document.getElementById("status-time").textContent  = formatStatusTime(now);
-  document.getElementById("hero-datetime").textContent = formatDateTime(now);
-}
-
-// ===== SHARE =====
-function shareWeather() {
-  const temp  = document.getElementById("hero-temp").textContent;
-  const desc  = document.getElementById("hero-desc").textContent;
-  const emoji = document.getElementById("hero-emoji").textContent;
-  const text  = "Thời tiết Hoằng Tiến, Thanh Hóa\n" + emoji + " " + temp + " – " + desc;
-  if (navigator.share) {
-    navigator.share({ title: "Thời Tiết", text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert("Đã sao chép!"));
-  }
-}
-
-// ===== MAIN =====
+// ===== MASTER LOAD FUNCTION =====
 async function loadWeather() {
-  // Spin both refresh buttons
-  const btnBottom  = document.getElementById("btn-refresh");
-  const btnHeader  = document.getElementById("header-refresh-btn");
-  if (btnBottom) btnBottom.classList.add("spinning");
-  if (btnHeader) btnHeader.classList.add("spinning");
+  const btn = document.getElementById("btn-refresh");
+  if (btn) btn.classList.add("spinning");
 
   try {
-    const data = await fetchWeather();
-    renderCurrent(data);
-    renderHourly(data);
-    renderDaily(data);
-    document.getElementById("last-update").textContent =
-      new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    const data = await fetchWeatherData();
+    renderCurrentHero(data);
+    renderHourlyTrack(data);
+    renderDailyTable(data);
   } catch (err) {
-    console.error(err);
-    document.getElementById("hero-data").classList.remove("hidden");
-    document.getElementById("skeleton").classList.add("hidden");
-    document.getElementById("hero-emoji").textContent = "⚠️";
-    document.getElementById("hero-temp").textContent  = "--°";
-    document.getElementById("hero-desc").textContent  = "Không tải được dữ liệu";
+    console.error("Fetch weather failed:", err);
+    document.getElementById("hero-desc").textContent = "Không thể tải dữ liệu";
   } finally {
-    if (btnBottom) btnBottom.classList.remove("spinning");
-    if (btnHeader) btnHeader.classList.remove("spinning");
+    if (btn) btn.classList.remove("spinning");
   }
 }
 
-// ===== INIT =====
-initParticles();
-updateClock();
-setInterval(updateClock, 15000);
-loadWeather();
-
-// ===== PULL-TO-REFRESH =====
-(function initPullToRefresh() {
-  const scrollEl  = document.querySelector(".scroll-content");
-  const ptrEl     = document.getElementById("ptr-indicator");
-  const ptrSpinner = document.getElementById("ptr-spinner");
-  const ptrText   = document.getElementById("ptr-text");
+// ===== PULL TO REFRESH INTERACTION =====
+function initPullToRefresh() {
+  const ptrBox = document.getElementById("ptr-box");
+  const ptrRing = document.getElementById("ptr-ring");
+  const ptrLabel = document.getElementById("ptr-label");
 
   let startY = 0;
-  let pulling = false;
-  let triggered = false;
-  const THRESHOLD = 65;
+  let isPulling = false;
+  const PULL_LIMIT = 70;
 
-  scrollEl.addEventListener("touchstart", function(e) {
-    if (scrollEl.scrollTop === 0) {
-      startY  = e.touches[0].clientY;
-      pulling = true;
-      triggered = false;
+  window.addEventListener("touchstart", (e) => {
+    if (window.scrollY <= 0) {
+      startY = e.touches[0].clientY;
+      isPulling = true;
     }
   }, { passive: true });
 
-  scrollEl.addEventListener("touchmove", function(e) {
-    if (!pulling) return;
+  window.addEventListener("touchmove", (e) => {
+    if (!isPulling) return;
     const dy = e.touches[0].clientY - startY;
-    if (dy > 10) {
-      ptrEl.classList.add("visible");
-      if (dy >= THRESHOLD && !triggered) {
-        ptrText.textContent = "Thả để làm mới";
-        ptrSpinner.classList.add("spinning");
-        triggered = true;
-      } else if (dy < THRESHOLD) {
-        ptrText.textContent = "Kéo để làm mới";
-        ptrSpinner.classList.remove("spinning");
+    if (dy > 15) {
+      ptrBox.classList.add("active");
+      if (dy >= PULL_LIMIT) {
+        ptrLabel.textContent = "Thả tay để làm mới";
+        ptrRing.classList.add("spinning");
+      } else {
+        ptrLabel.textContent = "Kéo xuống để làm mới";
+        ptrRing.classList.remove("spinning");
       }
     }
   }, { passive: true });
 
-  scrollEl.addEventListener("touchend", function() {
-    if (!pulling) return;
-    pulling = false;
-    if (triggered) {
-      ptrText.textContent = "Đang tải...";
+  window.addEventListener("touchend", (e) => {
+    if (!isPulling) return;
+    isPulling = false;
+    if (ptrRing.classList.contains("spinning")) {
+      ptrLabel.textContent = "Đang cập nhật...";
       loadWeather().then(() => {
-        ptrEl.classList.remove("visible");
-        ptrSpinner.classList.remove("spinning");
-        ptrText.textContent = "Kéo để làm mới";
+        ptrBox.classList.remove("active");
+        ptrRing.classList.remove("spinning");
+        ptrLabel.textContent = "Kéo xuống để làm mới";
       });
     } else {
-      ptrEl.classList.remove("visible");
+      ptrBox.classList.remove("active");
     }
-    triggered = false;
   }, { passive: true });
-})();
+}
 
+// ===== INITIALIZATION =====
+initSkyParticles();
+initPullToRefresh();
+loadWeather();
