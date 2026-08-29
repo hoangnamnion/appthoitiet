@@ -1,0 +1,20 @@
+﻿{
+  "name": "thoi-tiet-hoang-tien",
+  "version": "1.0.0",
+  "description": "App thoi tiet Hoang Tien, Thanh Hoa",
+  "main": "index.html",
+  "scripts": {
+    "sync:android": "npx cap sync android",
+    "sync:ios": "npx cap sync ios",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}

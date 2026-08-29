@@ -1,0 +1,22 @@
+﻿{
+  "appId": "com.thoitiet.hoangtienvn",
+  "appName": "Thoi Tiet",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "buildOptions": {
+      "releaseType": "APK"
+    }
+  },
+  "ios": {
+    "contentInset": "always"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
