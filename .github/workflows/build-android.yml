@@ -34,13 +34,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Add Android platform
-        run: npx cap add android || echo "Android already added"
-
       - name: Prepare www folder
         run: |
           mkdir -p www
           cp index.html style.css app.js www/
+
+      - name: Add Android platform
+        run: npx cap add android || echo "Android already added"
 
       - name: Sync Capacitor
         run: npx cap sync android
@@ -103,13 +103,13 @@ jobs:
       - name: Install CocoaPods
         run: gem install cocoapods
 
-      - name: Add iOS platform
-        run: npx cap add ios || echo "iOS already added"
-
       - name: Prepare www folder
         run: |
           mkdir -p www
           cp index.html style.css app.js www/
+
+      - name: Add iOS platform
+        run: npx cap add ios || echo "iOS already added"
 
       - name: Sync Capacitor
         run: npx cap sync ios
