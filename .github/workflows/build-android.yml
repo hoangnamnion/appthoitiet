@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK & iOS IPA
 
 on:
   push:
@@ -6,9 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  # =====================
+  # JOB 1: ANDROID APK
+  # =====================
   build-android:
+    name: Android APK
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,9 +34,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Capacitor CLI
-        run: npm install -g @capacitor/cli
-
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
@@ -50,7 +51,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: weather-app-debug.apk
+          name: weather-app-android.apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
 
@@ -59,18 +60,77 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.run_number }}
-          name: "Thời Tiết App v${{ github.run_number }}"
+          name: "Thoi Tiet App v${{ github.run_number }}"
           body: |
-            ## 📱 App Thời Tiết - Hoằng Tiến, Thanh Hóa
-            
-            ### Cài đặt Android:
-            1. Tải file `weather-app-debug.apk` bên dưới
-            2. Trên Android: Cài đặt → Bảo mật → Bật "Cho phép cài từ nguồn không rõ"
-            3. Mở file APK để cài
-            
+            ## App Thoi Tiet - Hoang Tien, Thanh Hoa
+
+            ### Cai dat Android:
+            1. Tai file `weather-app-android.apk`
+            2. Bat "Cho phep cai tu nguon khong ro" trong Cai dat
+            3. Mo file APK de cai
+
             Built from commit: ${{ github.sha }}
           files: android/app/build/outputs/apk/debug/app-debug.apk
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # =====================
+  # JOB 2: iOS IPA
+  # =====================
+  build-ios:
+    name: iOS IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Add iOS platform
+        run: npx cap add ios || echo "iOS already added"
+
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      - name: Install Pods
+        run: |
+          cd ios/App
+          pod install
+
+      - name: Build iOS (simulator - unsigned)
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath ios/build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package app
+        run: |
+          mkdir -p ios/ipa
+          cd ios/build/Build/Products/Release-iphonesimulator
+          zip -r ../../../../../ios/ipa/ThoiTiet-iOS.zip App.app
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weather-app-ios
+          path: ios/ipa/
+          retention-days: 30
